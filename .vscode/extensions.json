@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "ms-dotnettools.csharp",
+    "PTD.vscode-unitymeta",
+    "biati.vscode-show-hide-excluded-files",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}
