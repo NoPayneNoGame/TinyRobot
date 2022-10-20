@@ -31,7 +31,8 @@ public class PlayerMovement : MonoBehaviour
         if (!spacePressed)
         {
           currentState = state.doubleJumping;
-          // FIXME: Add flutter and remove downward force
+          // FIXME: Add flutter
+          haltVertical();
           rb.AddForce(Vector3.up * (jumpSpeed / 2), ForceMode.Impulse);
         }
         break;
@@ -52,6 +53,11 @@ public class PlayerMovement : MonoBehaviour
   private void haltHorizontal()
   {
     rb.velocity = new Vector3(0, rb.velocity.y, rb.velocity.z);
+  }
+
+  private void haltVertical()
+  {
+    rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
   }
 
   void OnCollisionEnter(Collision hit)
