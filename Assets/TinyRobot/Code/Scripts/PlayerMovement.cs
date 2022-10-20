@@ -33,7 +33,6 @@ public class PlayerMovement : MonoBehaviour
         if (!spacePressed)
         {
           currentState = state.doubleJumping;
-          // FIXME: Add flutter
           haltVertical();
           doubleJumpTimer = doubleJumpLength;
           doubleJump();
@@ -69,6 +68,11 @@ public class PlayerMovement : MonoBehaviour
   private void haltVertical()
   {
     rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+  }
+
+  private void haltUpwardMomentum()
+  {
+    if (rb.velocity.y > 0) haltVertical();
   }
 
   void OnCollisionEnter(Collision hit)
@@ -118,15 +122,15 @@ public class PlayerMovement : MonoBehaviour
     if (Input.GetKeyUp(KeyCode.Space))
     {
       spacePressed = false;
+      if (currentState != state.falling)
+      {
+        // This allows for smaller than maximum jumps, not sure if we want this
+        haltUpwardMomentum();
+      }
       if (currentState == state.doubleJumping)
       {
         doubleJumpTimer = 0;
         currentState = state.falling;
-      }
-      if (currentState != state.falling)
-      {
-        // FIXME: This breaks when you release space while falling from a jump without double jumping
-        haltVertical();
       }
     }
   }
