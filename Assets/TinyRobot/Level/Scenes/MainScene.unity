@@ -231,7 +231,7 @@ GameObject:
   - component: {fileID: 815692248}
   m_Layer: 0
   m_Name: Reference
-  m_TagString: Untagged
+  m_TagString: Floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -443,7 +443,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   jumpSpeed: 10
+  doubleJumpSpeed: 5
+  doubleJumpLength: 75
   rb: {fileID: 1645890790}
+  doubleJumpTimer: 0
 --- !u!4 &1645890789
 Transform:
   m_ObjectHideFlags: 0
@@ -575,7 +578,7 @@ GameObject:
   - component: {fileID: 1913522429}
   m_Layer: 0
   m_Name: Reference (1)
-  m_TagString: Untagged
+  m_TagString: Floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

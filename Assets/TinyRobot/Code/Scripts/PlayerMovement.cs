@@ -6,6 +6,8 @@ public class PlayerMovement : MonoBehaviour
 {
   public float speed;
   public float jumpSpeed;
+  public float doubleJumpSpeed;
+  public int doubleJumpLength;
   public Rigidbody rb;
 
   private enum state
@@ -17,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
   }
   private state currentState = state.ready;
   private bool spacePressed = false;
+  public int doubleJumpTimer = 0;
 
   private void jump()
   {
@@ -27,16 +30,23 @@ public class PlayerMovement : MonoBehaviour
         currentState = state.jumping;
         break;
       case state.jumping:
-      case state.falling:
         if (!spacePressed)
         {
           currentState = state.doubleJumping;
           // FIXME: Add flutter
           haltVertical();
-          rb.AddForce(Vector3.up * (jumpSpeed / 2), ForceMode.Impulse);
+          doubleJumpTimer = doubleJumpLength;
+          doubleJump();
         }
         break;
     }
+  }
+
+  private void doubleJump()
+  {
+    // FIXME: Ramp is very inconsistent based on double jump length also I originally wanted it to dip a little at the beginning
+    int ramp = (doubleJumpLength - doubleJumpTimer) / 20;
+    rb.AddForce(Vector3.up * doubleJumpSpeed * ramp, ForceMode.Force);
   }
 
   private void teleport(Vector3 target)
@@ -46,8 +56,9 @@ public class PlayerMovement : MonoBehaviour
 
   private void moveHorizontal(float horizontalAxis)
   {
+    // FIXME: Player moves faster horizontally in the air
     Vector3 movementDirection = new Vector3((horizontalAxis * speed), 0, 0);
-    rb.AddForce(movementDirection * speed, ForceMode.Force);
+    rb.AddForce(movementDirection, ForceMode.Force);
   }
 
   private void haltHorizontal()
@@ -74,7 +85,7 @@ public class PlayerMovement : MonoBehaviour
     {
       if (currentState == state.ready)
       {
-        currentState = state.falling;
+        currentState = state.jumping; // Set to jumping to allow double jump after "falling" off a foor
       }
     }
   }
@@ -98,9 +109,25 @@ public class PlayerMovement : MonoBehaviour
       spacePressed = true;
     }
 
+    if (doubleJumpTimer > 0)
+    {
+      doubleJumpTimer--;
+      doubleJump();
+    }
+
     if (Input.GetKeyUp(KeyCode.Space))
     {
       spacePressed = false;
+      if (currentState == state.doubleJumping)
+      {
+        doubleJumpTimer = 0;
+        currentState = state.falling;
+      }
+      if (currentState != state.falling)
+      {
+        // FIXME: This breaks when you release space while falling from a jump without double jumping
+        haltVertical();
+      }
     }
   }
 }
