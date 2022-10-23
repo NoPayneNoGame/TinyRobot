@@ -7,7 +7,9 @@ public class PlayerMovement : MonoBehaviour {
   public float jumpSpeed;
   public float doubleJumpSpeed;
   public int doubleJumpLength;
+  public int doubleJumpTimer = 0;
   public Rigidbody rb;
+
 
   private enum state {
     ready,
@@ -17,7 +19,12 @@ public class PlayerMovement : MonoBehaviour {
   }
   private state currentState = state.ready;
   private bool spacePressed = false;
-  public int doubleJumpTimer = 0;
+  private enum direction {
+    left,
+    right,
+  }
+  private direction facing = direction.right;
+  private Transform playerModel;
 
   private void jump() {
     switch (currentState) {
@@ -48,8 +55,24 @@ public class PlayerMovement : MonoBehaviour {
 
   private void moveHorizontal(float horizontalAxis) {
     // FIXME: Player moves faster horizontally in the air
+    if (horizontalAxis < 0) {
+      facing = direction.left;
+    }
+    if (horizontalAxis > 0) {
+      facing = direction.right;
+    }
     Vector3 movementDirection = new Vector3((horizontalAxis * speed), 0, 0);
     rb.AddForce(movementDirection, ForceMode.Force);
+  }
+
+  // This is not a very descriptive function name for what it does
+  private void flipPlayer() {
+    if (facing == direction.right) {
+      playerModel.transform.rotation = new Quaternion(0, 0, 0, 0);
+    }
+    if (facing == direction.left) {
+      playerModel.transform.rotation = new Quaternion(0, 180, 0, 0);
+    }
   }
 
   private void haltHorizontal() {
@@ -78,11 +101,16 @@ public class PlayerMovement : MonoBehaviour {
     }
   }
 
+  void Start() {
+    playerModel = transform.Find("PlayerModel");
+  }
+
   void Update() {
     float horizontal = Input.GetAxisRaw("Horizontal");
 
     if (horizontal != 0) {
       moveHorizontal(horizontal);
+      flipPlayer(); // This really doesn't need to be called every frame
     } else {
       haltHorizontal();
     }
