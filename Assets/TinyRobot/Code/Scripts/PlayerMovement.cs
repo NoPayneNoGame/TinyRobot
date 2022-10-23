@@ -43,10 +43,15 @@ public class PlayerMovement : MonoBehaviour
     gameObject.transform.position = target;
   }
 
-  private void move(float horizontalAxis)
+  private void moveHorizontal(float horizontalAxis)
   {
-    // FIXME: Should probably use forces/velocity instead of just teleporting the player a little left/right.
-    teleport(new Vector3(transform.position.x + (horizontalAxis * speed), transform.position.y, transform.position.z));
+    Vector3 movementDirection = new Vector3((horizontalAxis * speed), 0, 0);
+    rb.AddForce(movementDirection * speed, ForceMode.Force);
+  }
+
+  private void haltHorizontal()
+  {
+    rb.velocity = new Vector3(0, rb.velocity.y, rb.velocity.z);
   }
 
   void OnCollisionEnter(Collision hit)
@@ -68,12 +73,18 @@ public class PlayerMovement : MonoBehaviour
     }
   }
 
-
   void Update()
   {
     float horizontal = Input.GetAxisRaw("Horizontal");
 
-    move(horizontal);
+    if (horizontal != 0)
+    {
+      moveHorizontal(horizontal);
+    }
+    else
+    {
+      haltHorizontal();
+    }
 
     if (Input.GetKeyDown(KeyCode.Space))
     {
